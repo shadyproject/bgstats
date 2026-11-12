@@ -1,6 +1,12 @@
 ## Interface: 16001
 ## Title: BGStats
+## OptionalDeps: Titan
+## SavedVariables: BGStatsSettings
 ## SavedVariablesPerCharacter: BGStatsCharacterDB
 
+Locales/enUS.lua
 Tracking.lua
 Statistics.lua
+UI.lua
+Launcher.lua
+Titan.lua

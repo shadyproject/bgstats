@@ -1,4 +1,4 @@
-local addonName = ...
+local addonName, addon = ...
 local tracker = CreateFrame("Frame")
 local db
 local leavingUnfinished = false
@@ -19,6 +19,9 @@ local function FinishMatch(outcome, leftEarly)
         leftEarly = leftEarly,
     }
     match.recorded = true
+    if addon and addon.RefreshStatistics then
+        addon.RefreshStatistics()
+    end
 end
 
 local function RecordResult(winner)

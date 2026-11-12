@@ -1,0 +1,24 @@
+local _, addon = ...
+
+addon.L = {
+    title = "BGStats",
+    globalStats = "Global Stats",
+    settings = "Settings",
+    battleground = "Battleground",
+    ratio = "Win/Loss",
+    wins = "Wins",
+    losses = "Losses",
+    draws = "Draws",
+    early = "Left Early",
+    empty = "No battlegrounds available.",
+    noHistory = "No matches recorded for this battleground.",
+    history = "Match History",
+    win = "Win",
+    loss = "Loss",
+    draw = "Draw",
+    unknown = "Result unavailable",
+    showIcon = "Show minimap icon",
+    resetIcon = "Reset minimap icon position",
+    openStats = "Open battleground statistics",
+    dragIcon = "Drag to move",
+}
