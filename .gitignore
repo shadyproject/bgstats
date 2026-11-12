@@ -1,0 +1,17 @@
+# macOS metadata
+.DS_Store
+
+# Lua compiler and coverage output
+luac.out
+*.luac
+luacov.stats.out
+luacov.report.out
+
+# Packaging output
+/dist/
+/.release/
+
+# Local WoW client data
+/WTF/
+/Cache/
+/Logs/
