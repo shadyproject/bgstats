@@ -1,0 +1,6 @@
+## Interface: 16001
+## Title: BGStats
+## SavedVariablesPerCharacter: BGStatsCharacterDB
+
+Tracking.lua
+Statistics.lua
