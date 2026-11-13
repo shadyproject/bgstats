@@ -98,6 +98,11 @@ function addon.OpenSettings()
     Settings.OpenToCategory(category:GetID())
 end
 
+SLASH_BGSTATS1 = "/bgstats"
+SlashCmdList.BGSTATS = function()
+    addon.OpenStatistics()
+end
+
 local loader = CreateFrame("Frame")
 loader:RegisterEvent("PLAYER_LOGIN")
 loader:SetScript("OnEvent", function(self)
