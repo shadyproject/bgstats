@@ -10,6 +10,14 @@ local widths = { 246, 76, 64, 64, 64, 84, 82 }
 local rowHeight = 24
 local contentWidth = 680
 
+-- Instance IDs match saved results. UI map IDs resolve localized display names.
+local foreverBattlegrounds = {
+    [30] = { uiMapID = 91, name = "Alterac Valley" },
+    [489] = { uiMapID = 92, name = "Warsong Gulch" },
+    [529] = { uiMapID = 93, name = "Arathi Basin" },
+    [2997] = { uiMapID = 2524, name = "Darkspear Islands" },
+}
+
 function addon.GetBattlegrounds(byMap)
     local names = {}
     for id, totals in pairs(byMap) do
@@ -26,6 +34,14 @@ function addon.GetBattlegrounds(byMap)
             names[info.mapID] = info.name
         end
         index = index + 1
+    end
+
+    -- Queue availability can omit battlegrounds from the client list.
+    for id, battleground in pairs(foreverBattlegrounds) do
+        if not names[id] then
+            local map = C_Map.GetMapInfo(battleground.uiMapID)
+            names[id] = map and map.name or battleground.name
+        end
     end
 
     local maps = {}
