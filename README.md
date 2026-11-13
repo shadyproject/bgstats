@@ -9,7 +9,7 @@ BGStats is a World of Warcraft: Forever addon that automatically records battleg
 
 ## Usage
 
-1. Click the minimap icon to open your stats. Select a battleground to see its totals and match history.
+1. Click the minimap icon or type `/bgstats` to open your stats. Select a battleground to see its totals and match history.
 2. Open **Settings → AddOns → BGStats** to show or hide the minimap icon or reset its position.
 3. With Titan Panel installed, enable the BGStats plugin. Right-click it to open **Global Stats**, a specific battleground, or **Settings**.
 
