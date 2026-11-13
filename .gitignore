@@ -11,6 +11,9 @@ luacov.report.out
 /dist/
 /.release/
 
+# Local Git worktrees
+/.worktrees/
+
 # Local WoW client data
 /WTF/
 /Cache/
