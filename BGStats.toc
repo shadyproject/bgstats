@@ -1,5 +1,6 @@
 ## Interface: 16001
 ## Title: BGStats
+## Version: 0.1.0
 ## OptionalDeps: Titan
 ## SavedVariables: BGStatsSettings
 ## SavedVariablesPerCharacter: BGStatsCharacterDB
