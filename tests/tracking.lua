@@ -87,4 +87,30 @@ state, winner = 5, 1
 Fire("PLAYER_ENTERING_WORLD", true, false)
 Exit()
 assert(#matches == 6 and matches[6].outcome == "win" and matches[6].leftEarly == false)
+Enter()
+-- A hearthstone transition can clear the PvP state and instance before the exit event.
+mapID, state = nil, 0
+Fire("UPDATE_BATTLEFIELD_STATUS")
+Fire("PLAYER_LEAVING_WORLD")
+Fire("PLAYER_ENTERING_WORLD", false, false)
+Fire("PLAYER_ENTERING_WORLD", false, false)
+assert(#matches == 7 and matches[7].leftEarly == true and matches[7].outcome == nil)
+
+Enter()
+state = 0
+Fire("PLAYER_LEAVING_WORLD")
+mapID = nil
+Fire("PLAYER_ENTERING_WORLD", false, false)
+assert(#matches == 8 and matches[8].leftEarly == true and matches[8].outcome == nil)
+
+Enter()
+mapID, state = nil, 0
+Fire("PLAYER_ENTERING_WORLD", false, false)
+assert(#matches == 9 and matches[9].leftEarly == true and matches[9].outcome == nil)
+Enter()
+state, winner = 5, nil
+Fire("PVP_MATCH_COMPLETE", winner)
+mapID, state = nil, 0
+Fire("PLAYER_ENTERING_WORLD", false, false)
+assert(#matches == 10 and matches[10].leftEarly == false and matches[10].outcome == nil)
 print("Tracking checks passed")

@@ -1,8 +1,6 @@
 local addonName, addon = ...
 local tracker = CreateFrame("Frame")
 local db
-local leavingUnfinished = false
-local matchState = Enum.PvPMatchState
 
 local function FinishMatch(outcome, leftEarly)
     local match = db.activeMatch
@@ -56,15 +54,13 @@ local function ReconcileMatch(isWorldEntry, isRestart, completionEvent)
         local leftEarly
         if active.completed then
             leftEarly = false
-        elseif leavingUnfinished and not isRestart then
+        -- A teleport can clear the PvP state before the world transition events.
+        elseif not isRestart then
             leftEarly = true
         end
         FinishMatch(nil, leftEarly)
         db.activeMatch = nil
         active = nil
-    end
-    if isWorldEntry then
-        leavingUnfinished = false
     end
     if not mapID then
         return
@@ -105,14 +101,6 @@ end
 
 function tracker:PLAYER_LEAVING_WORLD()
     ReconcileMatch(false)
-    leavingUnfinished = false
-    local mapID = GetBattleground()
-    if db.activeMatch and db.activeMatch.mapID == mapID then
-        local state = C_PvP.GetActiveMatchState()
-        leavingUnfinished = not issecretvalue(state) and (state == matchState.Waiting
-            or state == matchState.StartUp
-            or state == matchState.Engaged)
-    end
 end
 
 function tracker:UPDATE_BATTLEFIELD_STATUS()
