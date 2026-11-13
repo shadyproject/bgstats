@@ -51,6 +51,10 @@ local catalog = {
     { mapID = 1, name = "Random", isRandom = true },
 }
 C_PvP = { GetBattlegroundInfo = function(index) return catalog[index] end }
+C_Map = { GetMapInfo = function(id)
+    local names = { [91] = "Alterac Valley", [92] = "Warsong Gulch", [93] = "Arathi Basin" }
+    return names[id] and { name = names[id] }
+end }
 BGStatsCharacterDB = {
     matches = {
         { mapID = 489, name = "Warsongschlucht", outcome = "win", recordedAt = 100 },
@@ -105,6 +109,19 @@ assert(panel:IsShown() and panel.TitleText.text == "Global Stats")
 assert(Find("text", "Win %"))
 assert(FindRow("Global Stats").cells[7].text == "100.0%")
 assert(FindRow("Arathi Basin").cells[7].text == "—")
+assert(FindRow("Alterac Valley").mapID == 30)
+local _, names = addon.GetBattlegrounds({})
+local getBattlegroundInfo = C_PvP.GetBattlegroundInfo
+C_PvP.GetBattlegroundInfo = function() end
+local defaultMaps, defaultNames = addon.GetBattlegrounds({})
+assert(#defaultMaps == 4)
+for _, id in ipairs({ 30, 489, 529, 2997 }) do
+    assert(defaultNames[id] == names[id])
+end
+C_PvP.GetBattlegroundInfo = getBattlegroundInfo
+local darkspear = FindRow("Darkspear Islands")
+assert(darkspear.mapID == 2997 and darkspear.cells[2].text == "0:0")
+assert(darkspear.cells[3].text == 0 and darkspear.cells[4].text == 0)
 local warsong = Find("text", "Warsong Gulch")
 assert(warsong.parent.cells[7].text == "100.0%")
 warsong.parent.scripts.OnClick(warsong.parent)
@@ -128,11 +145,11 @@ Load("Titan.lua")
 local plugin = Find("name", "TitanPanelBGStatsButton")
 local menu = {}
 plugin.registry.menuContextFunction(plugin, menu)
-assert(#menu == 4 and menu[1].label == "Global Stats" and menu[2].label == "Arathi Basin")
+assert(#menu == 6 and menu[1].label == "Global Stats" and menu[2].label == "Alterac Valley")
 menu[2].click()
-assert(panel.TitleText.text == "Arathi Basin")
+assert(panel.TitleText.text == "Alterac Valley")
 assert(Find("text", "No matches recorded for this battleground."))
-menu[4].click()
+menu[6].click()
 assert(opened == 42 and not panel:IsShown())
 
 canvas.scripts.OnShow()
