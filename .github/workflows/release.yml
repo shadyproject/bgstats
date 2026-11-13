@@ -1,0 +1,79 @@
+name: Build and release BGStats
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: bgstats-release
+  cancel-in-progress: false
+
+jobs:
+  release:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - name: Install Lua and ZIP
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y lua5.4 zip
+
+      - name: Run Lua tests
+        run: |
+          for test in tests/*.lua; do
+            lua5.4 "$test"
+          done
+
+      - name: Build addon ZIP
+        id: package
+        shell: bash
+        run: |
+          version=$(awk '/^## Version:[[:blank:]]*/ { sub(/^## Version:[[:blank:]]*/, ""); print }' BGStats.toc)
+          number='(0|[1-9][0-9]*)'
+          identifier='[0-9A-Za-z-]+'
+          prerelease="($number|[0-9]*[A-Za-z-][0-9A-Za-z-]*)"
+          semver="^$number\.$number\.$number(-$prerelease(\.$prerelease)*)?(\+$identifier(\.$identifier)*)?$"
+          if [[ ! $version =~ $semver ]]; then
+            echo "BGStats.toc must declare one valid semantic version." >&2
+            exit 1
+          fi
+
+          mkdir -p dist
+          staging=$(mktemp -d)
+          mkdir "$staging/BGStats"
+          cp BGStats.toc README.md "$staging/BGStats/"
+          while IFS= read -r file; do
+            mkdir -p "$staging/BGStats/$(dirname "$file")"
+            cp "$file" "$staging/BGStats/$file"
+          done < <(awk '/^[[:alnum:]_\/.-]+\.lua$/ { print }' BGStats.toc)
+
+          archive="$PWD/dist/BGStats-$version.zip"
+          (cd "$staging" && zip -qr "$archive" BGStats)
+          printf 'version=%s\narchive=%s\n' "$version" "$archive" >> "$GITHUB_OUTPUT"
+
+      - name: Publish GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VERSION: ${{ steps.package.outputs.version }}
+          ARCHIVE: ${{ steps.package.outputs.archive }}
+        run: |
+          tag="v$VERSION"
+          if gh release view "$tag" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            echo "Release $tag already exists."
+            exit 0
+          fi
+
+          flags=()
+          if [[ ${VERSION%%+*} == *-* ]]; then
+            flags+=(--prerelease)
+          fi
+          gh release create "$tag" "$ARCHIVE" --repo "$GITHUB_REPOSITORY" \
+            --target "$GITHUB_SHA" --title "BGStats $VERSION" --generate-notes "${flags[@]}"
