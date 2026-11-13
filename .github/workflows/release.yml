@@ -48,8 +48,9 @@ jobs:
 
           mkdir -p dist
           staging=$(mktemp -d)
-          mkdir "$staging/BGStats"
+          mkdir -p "$staging/BGStats/artwork"
           cp BGStats.toc README.md "$staging/BGStats/"
+          cp artwork/bgstats-icon.tga "$staging/BGStats/artwork/"
           while IFS= read -r file; do
             mkdir -p "$staging/BGStats/$(dirname "$file")"
             cp "$file" "$staging/BGStats/$file"

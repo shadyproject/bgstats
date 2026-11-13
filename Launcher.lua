@@ -4,7 +4,7 @@ local L = addon.L
 local icon
 local category
 local defaultAngle = math.rad(220)
-local iconTexture = "Interface/Icons/INV_BannerPVP_02"
+local iconTexture = "Interface/AddOns/BGStats/artwork/bgstats-icon"
 addon.iconTexture = iconTexture
 
 local function UpdateIconPosition()
@@ -31,7 +31,6 @@ local function CreateMinimapIcon()
     texture:ClearAllPoints()
     texture:SetPoint("CENTER")
     texture:SetSize(19, 19)
-    texture:SetTexCoord(0.08, 0.92, 0.08, 0.92)
 
     local border = icon:CreateTexture(nil, "OVERLAY")
     border:SetTexture("Interface/Minimap/MiniMap-TrackingBorder")
