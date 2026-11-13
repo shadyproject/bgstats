@@ -6,6 +6,7 @@ addon.L = {
     settings = "Settings",
     battleground = "Battleground",
     ratio = "Win/Loss",
+    winPercentage = "Win %",
     wins = "Wins",
     losses = "Losses",
     draws = "Draws",

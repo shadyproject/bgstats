@@ -5,9 +5,10 @@ local panel, scroll, content
 local rows = {}
 local selectedMap
 local columns = { L.battleground, L.ratio, L.wins, L.losses, L.draws, L.early }
-local widths = { 246, 76, 64, 64, 64, 84 }
+local overviewColumns = { L.battleground, L.ratio, L.wins, L.losses, L.draws, L.early, L.winPercentage }
+local widths = { 246, 76, 64, 64, 64, 84, 82 }
 local rowHeight = 24
-local contentWidth = 598
+local contentWidth = 680
 
 function addon.GetBattlegrounds(byMap)
     local names = {}
@@ -84,6 +85,14 @@ local function Summary(name, totals)
     return { name, totals.ratio, totals.wins, totals.losses, totals.draws, totals.earlyDepartures }
 end
 
+local function OverviewSummary(name, totals)
+    local values = Summary(name, totals)
+    local wins, losses, draws = values[3], values[4], values[5]
+    local completed = wins + losses + draws
+    values[7] = completed > 0 and ("%.1f%%"):format(100 * wins / completed) or "—"
+    return values
+end
+
 local function Render()
     local overall, byMap = addon.GetStatistics()
     local maps, names = addon.GetBattlegrounds(byMap)
@@ -96,8 +105,8 @@ local function Render()
         SetRow(count, values, mapID, heading)
     end
 
-    Add(columns, nil, true)
     if selectedMap then
+        Add(columns, nil, true)
         Add(Summary(names[selectedMap] or L.battleground, byMap[selectedMap]))
         Add({ L.history }, nil, true)
         local historyHeader = count
@@ -113,9 +122,10 @@ local function Render()
             Add({ L.noHistory })
         end
     else
-        Add(Summary(L.globalStats, overall))
+        Add(overviewColumns, nil, true)
+        Add(OverviewSummary(L.globalStats, overall))
         for _, map in ipairs(maps) do
-            Add(Summary(map.name, byMap[map.id]), map.id)
+            Add(OverviewSummary(map.name, byMap[map.id]), map.id)
         end
         if #maps == 0 then
             Add({ L.empty })
@@ -130,7 +140,7 @@ end
 
 local function CreatePanel()
     panel = CreateFrame("Frame", "BGStatsStatisticsFrame", UIParent, "BasicFrameTemplateWithInset")
-    panel:SetSize(664, 400)
+    panel:SetSize(746, 400)
     panel:SetPoint("CENTER")
     panel:SetFrameStrata("DIALOG")
     panel:SetClampedToScreen(true)

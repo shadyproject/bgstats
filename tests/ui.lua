@@ -76,6 +76,16 @@ local function Find(key, value)
     error("Frame not found for " .. tostring(value))
 end
 
+local function FindRow(name)
+    for _, frame in ipairs(frames) do
+        local cells = rawget(frame, "cells")
+        if cells and cells[1].text == name then
+            return frame
+        end
+    end
+    error("Row not found for " .. name)
+end
+
 local function Load(file)
     assert(loadfile(file))("BGStats", addon)
 end
@@ -92,13 +102,21 @@ assert(icon:IsShown())
 icon.scripts.OnClick()
 local panel = Find("name", "BGStatsStatisticsFrame")
 assert(panel:IsShown() and panel.TitleText.text == "Global Stats")
+assert(Find("text", "Win %"))
+assert(FindRow("Global Stats").cells[7].text == "100.0%")
+assert(FindRow("Arathi Basin").cells[7].text == "—")
 local warsong = Find("text", "Warsong Gulch")
+assert(warsong.parent.cells[7].text == "100.0%")
 warsong.parent.scripts.OnClick(warsong.parent)
 assert(panel.TitleText.text == "Warsong Gulch")
 assert(Find("text", date("%x %X", 200) .. "  |  Left Early"))
 BGStatsCharacterDB.matches[3] = { mapID = 489, name = "Warsong Gulch", outcome = "draw", recordedAt = 300 }
 addon.RefreshStatistics()
 assert(Find("text", date("%x %X", 300) .. "  |  Draw"))
+
+addon.OpenStatistics()
+assert(FindRow("Global Stats").cells[7].text == "50.0%")
+assert(FindRow("Warsong Gulch").cells[7].text == "50.0%")
 
 Titan_G = { plugins = { OnClick = function() end } }
 Titan_Menu = {
