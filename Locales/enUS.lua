@@ -14,6 +14,7 @@ addon.L = {
     empty = "No battlegrounds available.",
     noHistory = "No matches recorded for this battleground.",
     history = "Match History",
+    joinedInProgress = "Joined in progress",
     win = "Win",
     loss = "Loss",
     draw = "Draw",
