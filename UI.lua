@@ -57,7 +57,7 @@ function addon.GetBattlegrounds(byMap)
     return maps, names
 end
 
-local function SetRow(index, values, mapID, heading)
+local function SetRow(index, values, mapID, heading, history)
     local row = rows[index]
     if not row then
         row = CreateFrame("Button", nil, content)
@@ -81,6 +81,8 @@ local function SetRow(index, values, mapID, heading)
         rows[index] = row
     end
 
+    row.cells[2]:SetWidth((history and (contentWidth - widths[1]) or widths[2]) - 12)
+    row.cells[2]:SetJustifyH(history and "LEFT" or "CENTER")
     row.mapID = mapID
     row:EnableMouse(mapID ~= nil)
     for column, cell in ipairs(row.cells) do
@@ -116,9 +118,9 @@ local function Render()
     panel.back:SetShown(selectedMap ~= nil)
 
     local count = 0
-    local function Add(values, mapID, heading)
+    local function Add(values, mapID, heading, history)
         count = count + 1
-        SetRow(count, values, mapID, heading)
+        SetRow(count, values, mapID, heading, history)
     end
 
     if selectedMap then
@@ -131,7 +133,8 @@ local function Render()
             local match = matches[index]
             if match.mapID == selectedMap then
                 local outcome = match.leftEarly and L.early or L[match.outcome] or L.unknown
-                Add({ date("%x %X", match.recordedAt) .. "  |  " .. outcome })
+                Add({ date("%x %X", match.recordedAt) .. "  |  " .. outcome,
+                    match.joinedInProgress and L.joinedInProgress }, nil, nil, true)
             end
         end
         if count == historyHeader then

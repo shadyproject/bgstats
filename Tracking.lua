@@ -1,6 +1,8 @@
 local addonName, addon = ...
 local tracker = CreateFrame("Frame")
 local db
+local pendingEntry
+local matchState = Enum.PvPMatchState
 
 local function FinishMatch(outcome, leftEarly)
     local match = db.activeMatch
@@ -15,6 +17,7 @@ local function FinishMatch(outcome, leftEarly)
         recordedAt = GetServerTime(),
         outcome = outcome,
         leftEarly = leftEarly,
+        joinedInProgress = match.joinedInProgress,
     }
     match.recorded = true
     if addon and addon.RefreshStatistics then
@@ -67,13 +70,27 @@ local function ReconcileMatch(isWorldEntry, isRestart, completionEvent)
     end
 
     if not active then
-        db.activeMatch = {
+        active = {
             mapID = mapID,
             name = name,
             enteredAt = GetServerTime(),
         }
+        db.activeMatch = active
+        pendingEntry = active
     end
-    active = db.activeMatch
+    if isWorldEntry and pendingEntry == active then
+        pendingEntry = nil
+        if not isRestart then
+            local state = C_PvP.GetActiveMatchState()
+            if not issecretvalue(state) then
+                if state == matchState.Engaged then
+                    active.joinedInProgress = true
+                elseif state == matchState.Waiting or state == matchState.StartUp then
+                    active.joinedInProgress = false
+                end
+            end
+        end
+    end
     if completionEvent then
         active.completed = true
     elseif C_PvP.IsMatchComplete() then

@@ -62,7 +62,7 @@ for index, result in ipairs({ { 1, "win" }, { 0, "loss" }, { 255, "draw" } }) do
     Fire("PLAYER_ENTERING_WORLD", false, true)
     Exit()
     assert(#matches == index and matches[index].outcome == result[2])
-    assert(matches[index].leftEarly == false)
+    assert(matches[index].leftEarly == false and matches[index].joinedInProgress == true)
 end
 
 Enter()
@@ -72,6 +72,7 @@ Fire("PLAYER_ENTERING_WORLD", false, true)
 assert(BGStatsCharacterDB.activeMatch.enteredAt == enteredAt)
 Exit()
 assert(#matches == 4 and matches[4].leftEarly == true and matches[4].outcome == nil)
+assert(matches[4].joinedInProgress == true)
 assert(matches[4].mapID == 489 and matches[4].name == "Warsong Gulch")
 assert(matches[4].recordedAt > matches[4].enteredAt)
 
@@ -113,4 +114,20 @@ Fire("PVP_MATCH_COMPLETE", winner)
 mapID, state = nil, 0
 Fire("PLAYER_ENTERING_WORLD", false, false)
 assert(#matches == 10 and matches[10].leftEarly == false and matches[10].outcome == nil)
+mapID, state = 489, 2
+Fire("UPDATE_BATTLEFIELD_STATUS")
+Fire("PLAYER_ENTERING_WORLD", false, false)
+state = 3
+Fire("UPDATE_BATTLEFIELD_STATUS")
+LoadAddon()
+Fire("PLAYER_ENTERING_WORLD", false, true)
+Exit()
+assert(matches[11].joinedInProgress == false)
+
+LoadAddon()
+mapID, state = 489, 3
+Fire("UPDATE_BATTLEFIELD_STATUS")
+Fire("PLAYER_ENTERING_WORLD", true, false)
+Exit()
+assert(matches[12].joinedInProgress == nil)
 print("Tracking checks passed")

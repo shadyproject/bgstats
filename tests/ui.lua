@@ -58,7 +58,7 @@ end }
 BGStatsCharacterDB = {
     matches = {
         { mapID = 489, name = "Warsongschlucht", outcome = "win", recordedAt = 100 },
-        { mapID = 489, name = "Warsongschlucht", leftEarly = true, recordedAt = 200 },
+        { mapID = 489, name = "Warsongschlucht", leftEarly = true, joinedInProgress = true, recordedAt = 200 },
     },
 }
 local canvas, opened
@@ -130,7 +130,7 @@ local warsong = Find("text", "Warsong Gulch")
 assert(warsong.parent.cells[7].text == "100.0%")
 warsong.parent.scripts.OnClick(warsong.parent)
 assert(panel.TitleText.text == "Warsong Gulch")
-assert(Find("text", date("%x %X", 200) .. "  |  Left Early"))
+assert(Find("text", date("%x %X", 200) .. "  |  Left Early").parent.cells[2].text == "Joined in progress")
 BGStatsCharacterDB.matches[3] = { mapID = 489, name = "Warsong Gulch", outcome = "draw", recordedAt = 300 }
 addon.RefreshStatistics()
 assert(Find("text", date("%x %X", 300) .. "  |  Draw"))
