@@ -72,9 +72,24 @@ jobs:
             exit 0
           fi
 
+          # CurseForge packages tagged pushes.
+          tag_ref="refs/tags/$tag"
+          remote_tags=$(git ls-remote origin "$tag_ref" "$tag_ref^{}")
+          if [[ -z $remote_tags ]]; then
+            git -c credential.helper= -c 'credential.helper=!gh auth git-credential' \
+              push origin "$GITHUB_SHA:$tag_ref"
+          else
+            tag_commit=$(awk -v ref="$tag_ref" '$2 == ref { commit = $1 }
+              $2 == ref "^{}" { peeled = $1 } END { print (peeled ? peeled : commit) }' <<< "$remote_tags")
+            if [[ $tag_commit != "$GITHUB_SHA" ]]; then
+              echo "Tag $tag already points to a different commit." >&2
+              exit 1
+            fi
+          fi
+
           flags=()
           if [[ ${VERSION%%+*} == *-* ]]; then
             flags+=(--prerelease)
           fi
           gh release create "$tag" "$ARCHIVE" --repo "$GITHUB_REPOSITORY" \
-            --target "$GITHUB_SHA" --title "BGStats $VERSION" --generate-notes "${flags[@]}"
+            --verify-tag --title "BGStats $VERSION" --generate-notes "${flags[@]}"
