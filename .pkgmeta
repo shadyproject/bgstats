@@ -1,0 +1,5 @@
+package-as: BGStats
+
+ignore:
+  - tests
+  - artwork/bgstats-logo.png
