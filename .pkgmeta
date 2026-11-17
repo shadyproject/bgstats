@@ -1,5 +1,6 @@
 package-as: BGStats
 
 ignore:
+  - .agents
   - tests
   - artwork/bgstats-logo.png
